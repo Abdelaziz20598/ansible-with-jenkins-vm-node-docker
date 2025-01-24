@@ -48,7 +48,7 @@ Before you begin, ensure you have the following installed and configured:
 Follow these steps to set up Jenkins, Node.js, Docker, and related services on your VM:
 
 ### 1. Clone the repository:
-```bash
+
 git clone https://github.com/Abdelaziz20598/ansible-with-jenkins-vm-node-docker.git
 cd ansible-with-jenkins-vm-node-docker
 
