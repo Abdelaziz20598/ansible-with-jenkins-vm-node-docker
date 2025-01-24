@@ -1,0 +1,15 @@
+---
+# vars file for web
+#[web:vars] was in the inventory before making roles
+# centos_pkg=curl
+# centos_pkg_state=latest
+
+# message="Hellllo Zizo:))))))"
+
+ubuntu_pkg: docker
+ubuntu_pkg_state: present
+ansible_user: abdelaziz
+# dockerhub_username: abdelaziz20598
+# dockerhub_password: 01018854247eg
+
+#message: "Docker already installed"

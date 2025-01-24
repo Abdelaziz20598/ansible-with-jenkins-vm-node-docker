@@ -1,0 +1,118 @@
+---
+# tasks file for web
+
+#updating the cache >> apt update
+- name: updating cache
+  apt:
+    update_cache: yes
+  tags: [update-chache, always]
+
+#cleaning cache to save storage
+- name: Clean apt cache 
+  command: apt-get clean
+
+
+# must use this gather facts to use it in the when condition ansible_facts.packages >> else will cause an error
+- name: Gather package facts
+  ansible.builtin.package_facts:
+
+
+#check if docker already installed
+- name: checking docker
+  command: docker --version
+  register: docker_installed
+  ignore_errors: yes
+
+# Display the result of the Docker version check
+- name: Display docker installation status
+  debug:
+    var: docker_installed
+
+# Install Docker if not already installed
+#copying the script
+- name: copying docker-installing script to the server
+  copy:
+    src: ./install-docker.sh
+    dest: /home/{{ ansible_user }}/install_docker.sh
+    mode: '0771'  # Ensure the script has executable permissions
+  when: docker_installed.failed == true
+
+# Running the script to install Docker packages if not already installed
+- name: Run the install-docker.sh script 
+  command: /bin/bash /home/{{ ansible_user }}/install_docker.sh
+  when: docker_installed.failed == true
+  notify:
+    - Check Docker status
+
+
+# - name: Ensure docker is started
+#   #ansible.builtin.debug:
+#     #msg: "nginx is installed and it will be start"
+#   service:
+#     name: docker
+#     state: started
+#   when: "'docker' in ansible_facts.packages"
+
+
+
+#use a plugin that requires the Docker SDK for Python, you need to install it on the machine running ansible
+#pip and docker python library must be installed to use docker in ansible
+
+# Installing pip3
+- name: Installing pip3
+  apt:
+    name: python3-pip
+    state: latest
+    update_cache: yes  # Ensures apt cache is updated before installation
+
+# Installing Docker Python library
+- name: Installing Docker SDK for Python
+  pip:
+    name: "{{ ubuntu_pkg }}"  # Uses the variable ubuntu_pkg (docker)
+    state: "{{ ubuntu_pkg_state }}"  # Ensures the package is installed
+    executable: pip3  # Ensures it's using Python 3's pip
+
+# adding a user >> not nessisary because i will use user "abdelaziz" in jenkings while configure the node
+# - name: adding user jenkins
+#   command: sudo useradd -m -s /bin/bash jenkins && usermod -aG sudo docker && echo "jenkins:12345" | chpasswd
+# - name: Ensure docker group exists
+#   group:
+#     name: docker
+#     state: present  # Ensures that the docker group is created if it doesn't exist
+
+- name: Add the jenkins user
+  user:
+    name: jenkins
+    comment: "Jenkins User"
+    shell: /bin/bash
+    create_home: yes
+    password: "{{ '12345' | password_hash('sha512') }}"
+
+- name: Add jenkins user to sudo group
+  user:
+    name: jenkins
+    groups: sudo
+    append: yes
+
+- name: Add jenkins user to docker group
+  user:
+    name: jenkins
+    groups: docker
+    append: yes
+
+#installing java for jenkins
+- name: Installing Java (OpenJDK 17)
+  apt:
+    name:
+      - fontconfig  # Include if necessary
+      - openjdk-17-jre
+    state: present
+#making a directory for the slave node
+- name: Create directory for the slave node
+  file:
+    path: /home/jenkins/jenkins-slave1 #/home/abdelaziz/jenkins-slave1
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: '0755'
+#

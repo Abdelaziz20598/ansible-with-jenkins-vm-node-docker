@@ -1,0 +1,4 @@
+galaxy_info:
+  author: Abdelaziz
+  description: examble for ansible role to install nginx and check for curl and edit nginx's html file
+  company: your company (optional)

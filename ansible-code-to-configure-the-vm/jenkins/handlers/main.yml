@@ -1,0 +1,12 @@
+---
+# handlers file for web
+#Restart nginx service
+
+#handlers:
+- name: Check Docker status
+  service:
+    name: docker
+    state: started
+  #cant use debug in handler
+  #debug:
+    #msg: "nginx is restarted"
