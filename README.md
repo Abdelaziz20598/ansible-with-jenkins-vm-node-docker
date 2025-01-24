@@ -11,7 +11,6 @@ This repository contains an Ansible-based automation setup for deploying a Jenki
 - [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
 - [Usage](#usage)
-- [Configuration](#configuration)
 
 ---
 
@@ -49,38 +48,38 @@ Follow these steps to set up Jenkins, Node.js, Docker, and related services on y
 
 ### 1. Clone the repository:
 
-git clone https://github.com/Abdelaziz20598/ansible-with-jenkins-vm-node-docker.git
-cd ansible-with-jenkins-vm-node-docker
+		git clone https://github.com/Abdelaziz20598/ansible-with-jenkins-vm-node-docker.git
+		cd ansible-with-jenkins-vm-node-docker
 
 ### 2. Configure your VM:
 
-    Run the SSH script to connect to your VM:
+Run the SSH script to connect to your VM:
 
-./ansible-ssh.sh hosts.txt
-
+		./ansible-ssh.sh hosts.txt
+	
 ### 3.Run the Ansible playbook:
 
 Execute the playbook to configure Jenkins, Node.js, Docker, and other dependencies on your VM:
 
-ansible-playbook jenkins-install-roles.yml
+		ansible-playbook jenkins-install-roles.yml	
 
 ### 4. SSH to your VM:
 
 After the playbook runs, you can SSH into your VM using the jenkins user to verify everything is correctly installed:
 
-ssh jenkins@<VM_IP>
+		ssh jenkins@<VM_IP>
 
 ### 5. Run Jenkins:
 
 You can run Jenkins as a Docker container on your VM:
 
-docker run -d -p 8080:8080 -v jenkins_home:/var/jenkins_home --name jenkins jenkins/jenkins:lts
+		docker run -d -p 8080:8080 -v jenkins_home:/var/jenkins_home --name jenkins jenkins/jenkins:lts
 
 ### 6. Access Jenkins:
 
 Once Jenkins is running, you can access it in your browser:
 
-http://localhost:8080
+		http://localhost:8080
 
 ### 7. Set up Jenkins credentials:
 
@@ -99,5 +98,26 @@ http://localhost:8080
 Create a Jenkins pipeline job to run the repository. The pipeline should reference the Jenkinsfile in the Node.js app repository and build the Docker image for the Node.js app.
 
 link github repo containing the jenkinsfile and the docker image of the nodejs app
-https://github.com/Abdelaziz20598/nodjs-container-app
+		https://github.com/Abdelaziz20598/nodjs-container-app
 note it is private
+
+
+
+## Project Structure
+
+    jenkins-install-roles.yml: The main Ansible playbook to automate the setup process.
+    inventory/hosts.ini: Inventory file containing VM details (IP, SSH username, etc.).
+    roles/: Directory containing Ansible roles for configuring Jenkins, Node.js, and Docker.
+        roles/jenkins/: Role for installing and configuring Jenkins.
+        roles/nodejs/: Role for installing Node.js.
+        roles/docker/: Role for setting up Docker.
+
+## Usage
+
+Once Jenkins and the necessary services are installed, you can proceed with setting up your CI/CD pipeline in Jenkins.
+Example Workflow:
+
+    Create a new Jenkins job: Set up a new job for your project (e.g., a Node.js application).
+    Configure Docker in Jenkins: Ensure Jenkins is configured to use Docker as a build environment.
+    Set up GitHub integration: Configure Jenkins to pull from your GitHub repository to automatically trigger builds.
+    Create build pipelines: Create Jenkins pipelines that utilize Docker for building and testing your application.
